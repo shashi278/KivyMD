@@ -4,20 +4,19 @@ import sys
 from pathlib import Path
 
 from kivy.core.window import Window
+from kivy.factory import Factory  # NOQA: F401
 from kivy.lang import Builder
 from kivy.loader import Loader
 from libs.baseclass.dialog_change_theme import (
     KitchenSinkDialogChangeTheme,
     KitchenSinkUsageCode,
 )
-from libs.baseclass.expansionpanel import KitchenSinkExpansionPanelContent
 from libs.baseclass.list_items import (  # NOQA: F401
     KitchenSinkOneLineLeftIconItem,
 )
 
-from kivymd import __version__, images_path
+from kivymd import images_path
 from kivymd.app import MDApp
-from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelOneLine
 
 os.environ["KIVY_PROFILE_LANG"] = "1"
 
@@ -61,9 +60,6 @@ class KitchenSinkApp(MDApp):
         Builder.load_file(
             f"{os.environ['KITCHEN_SINK_ROOT']}/libs/kv/dialog_change_theme.kv",
         )
-        Builder.load_file(
-            f"{os.environ['KITCHEN_SINK_ROOT']}/libs/kv/base_content.kv",
-        )
 
         with open(
             f"{os.environ['KITCHEN_SINK_ROOT']}/screens_data.json"
@@ -99,7 +95,7 @@ class KitchenSinkApp(MDApp):
             if "toolbar" in screen_object.ids:
                 screen_object.ids.toolbar.title = name_screen
             manager.add_widget(screen_object)
-        code_file = f"{os.environ['KITCHEN_SINK_ROOT']}/assets/md/{self.data_screens[name_screen]['source_code']}"
+        code_file = f"{os.environ['KITCHEN_SINK_ROOT']}/assets/usage/{self.data_screens[name_screen]['source_code']}"
         with open(code_file, "r") as f:
             self.sample_code = f.read()
             self.screen_name = name_screen
@@ -115,11 +111,6 @@ class KitchenSinkApp(MDApp):
         )
         self.root.ids.backdrop.ids._front_layer.md_bg_color = [0, 0, 0, 0]
 
-    def callback_for_menu_items(self, *args):
-        from kivymd.toast import toast
-
-        toast(args[0])
-
     def show_code(self):
         if self.theme_cls.device_orientation == "landscape":
             code = KitchenSinkUsageCode(
@@ -128,16 +119,6 @@ class KitchenSinkApp(MDApp):
                 website=self.website,
             )
             code.open()
-
-    def add_expansion_panel(self, card):
-        content = KitchenSinkExpansionPanelContent()
-        card.add_widget(
-            MDExpansionPanel(
-                icon=f"{os.environ['KITCHEN_SINK_ASSETS']}avatar.png",
-                content=content,
-                panel_cls=MDExpansionPanelOneLine(text=f"KivyMD {__version__}"),
-            )
-        )
 
 
 KitchenSinkApp().run()

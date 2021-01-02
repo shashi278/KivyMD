@@ -21,7 +21,7 @@ If you wish to become a project developer (permission to create branches on the 
 
 [![Discord](https://img.shields.io/discord/566880874789076992?logo=discord)](https://discord.gg/wu3qBST)
 [![Twitter](https://img.shields.io/twitter/follow/KivyMD?label=follow&logo=twitter&style=flat&color=brightgreen)](https://twitter.com/KivyMD)
-[![YouTube](https://img.shields.io/static/v1?label=subscribe&logo=youtube&logoColor=ff0000&color=brightgreen&message=1k)](https://www.youtube.com/c/KivyMD)
+[![YouTube](https://img.shields.io/static/v1?label=subscribe&logo=youtube&logoColor=ff0000&color=brightgreen&message=2k)](https://www.youtube.com/c/KivyMD)
 [![Habr](https://img.shields.io/static/v1?label=habr&message=ru&logo=habr&color=brightgreen)](https://habr.com/ru/users/kivymd/posts)
 [![StackOverflow](https://img.shields.io/static/v1?label=stackoverflow%20tag&logo=stackoverflow&logoColor=fe7a16&color=brightgreen&message=kivymd)](https://stackoverflow.com/tags/kivymd)
 [![Open Collective](https://img.shields.io/opencollective/all/kivymd?label=financial%20contributors&logo=open-collective)](https://opencollective.com/kivymd)
@@ -31,7 +31,7 @@ If you wish to become a project developer (permission to create branches on the 
 [![Test workflow](https://github.com/kivymd/KivyMD/workflows/Test/badge.svg?branch=master)](https://github.com/kivymd/KivyMD/actions?query=workflow%3ATest)
 [![Build demos workflow](https://github.com/kivymd/KivyMD/workflows/Build%20demos/badge.svg?branch=master)](https://github.com/kivymd/KivyMD/actions?query=workflow%3A"Build+demos")
 [![Documentation status](https://readthedocs.org/projects/kivymd/badge/?version=latest)](https://kivymd.readthedocs.io)
-[![Documentation status](https://img.shields.io/github/repo-size/kivymd/kivymd.svg)](https://img.shields.io/github/repo-size/kivymd/kivymd.svg)
+[![Repository size](https://img.shields.io/github/repo-size/kivymd/kivymd.svg)](https://github.com/kivymd/KivyMD)
 
 ## Installation
 
@@ -41,7 +41,7 @@ pip install kivymd==0.104.1
 
 ### Dependencies:
 
-- [Kivy](https://github.com/kivy/kivy) >= 1.10.1 ([Installation](https://kivy.org/doc/stable/gettingstarted/installation.html))
+- [Kivy](https://github.com/kivy/kivy) >= 2.0.0 ([Installation](https://kivy.org/doc/stable/gettingstarted/installation.html))
 - [Python 3.6+](https://www.python.org/)
 
 ### How to install
@@ -66,14 +66,14 @@ cd KivyMD
 pip install .
 ```
 
-**_Speed Tip_**: If you don't need full commit history (about 160 MiB), you can
+**_Speed Tip_**: If you don't need full commit history (about 1.14 GiB), you can
 use a shallow clone (`git clone https://github.com/kivymd/KivyMD.git --depth 1`)
 to save time. If you need full commit history, then remove `--depth 1`.
 
 ### How to use with [Buildozer](https://github.com/kivy/buildozer)
 
 ```ini
-requirements = kivy==1.11.1, kivymd==0.104.1
+requirements = kivy==2.0.0, kivymd==0.104.1
 ```
 
 This will download latest release version of KivyMD from [PyPI](https://pypi.org/project/kivymd).
@@ -82,7 +82,7 @@ If you want to use development version from [master](https://github.com/kivymd/K
 branch, you should specify link to zip archive:
 
 ```ini
-requirements = kivy==1.11.1, https://github.com/kivymd/KivyMD/archive/master.zip
+requirements = kivy==2.0.0, https://github.com/kivymd/KivyMD/archive/master.zip
 ```
 
 Do not forget to run `buildozer android clean` or remove `.buildozer` directory
@@ -115,7 +115,11 @@ See documentation at https://kivymd.readthedocs.io
 
 Wiki with examples of using KivyMD widgets: https://github.com/kivymd/KivyMD/wiki
 
+### Demos
+
 [Kitchen sink](https://github.com/kivymd/KivyMD/tree/master/demos/kitchen_sink) app demonstrates every KivyMD widget. You can see how to use widget in code of app. You can download apk for your smartphone (Android 6.0 and higher): [kivymd/storage (binaries branch)](https://github.com/kivymd/storage/tree/binaries/demo_kitchen_sink).
+
+Also we have Material Studies: [Crane](https://github.com/kivymd/KivyMD/tree/master/demos/crane), [Fortnightly](https://github.com/kivymd/KivyMD/tree/master/demos/fortnightly), [Rally](https://github.com/kivymd/KivyMD/tree/master/demos/rally), [Shrine](https://github.com/kivymd/KivyMD/tree/master/demos/shrine). You can download apks for your smartphone: [kivymd/storage (binaries branch)](https://github.com/kivymd/storage/tree/binaries).
 
 ### Tutorials on YouTube
 
@@ -146,13 +150,6 @@ If you need assistance or you have a question, you can ask for help on our maili
 ## Settings
 
 #### [Syntax highlighting and auto-completion for Kivy/KivyMD .kv files in PyCharm/Intellij IDEA](https://github.com/noembryo/KV4Jetbrains)
-
-## API Breaking changes
-
-- [Changed MDExpansionPanel panel creation](https://kivymd.readthedocs.io/en/latest/components/expansion-panel/index.html)
-- [Changed the use of the MDDropdownMenu](https://kivymd.readthedocs.io/en/latest/components/menu/index.html)
-- [Changed the use of the MDDropDownItem](https://kivymd.readthedocs.io/en/latest/components/dropdown-item/index.html)
-- [Changed the use of the MDDialog](https://kivymd.readthedocs.io/en/latest/components/dialog/index.html)
 
 ## Video preview
 

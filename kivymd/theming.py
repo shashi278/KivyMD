@@ -782,12 +782,9 @@ class ThemeManager(EventDispatcher):
     def set_clearcolor_by_theme_style(self, theme_style):
         if not self.set_clearcolor:
             return
-        if theme_style == "Light":
-            Window.clearcolor = get_color_from_hex(
-                colors["Light"]["Background"]
-            )
-        elif theme_style == "Dark":
-            Window.clearcolor = get_color_from_hex(colors["Dark"]["Background"])
+        Window.clearcolor = get_color_from_hex(
+            colors[theme_style]["Background"]
+        )
 
     # font name, size (sp), always caps, letter spacing (sp)
     font_styles = DictProperty(
@@ -894,8 +891,7 @@ class ThemableBehavior(EventDispatcher):
                 ):
                     raise ValueError(
                         "KivyMD: App object must be inherited from "
-                        "`kivymd.app.MDApp`. See "
-                        "https://github.com/kivymd/KivyMD/blob/master/README.md#api-breaking-changes"
+                        "`kivymd.app.MDApp`"
                     )
             except AttributeError:
                 raise ValueError(

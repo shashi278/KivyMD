@@ -7,25 +7,26 @@ title = Shrine
 package.name = shrine
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = com.kivymd
+package.domain = org.kivymd
 
 # (str) Source code where the main.py live
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,jpeg,ttf,md,kv,json
+source.include_exts = py,png,jpg,jpeg,ttf,kv
 
 # (list) List of inclusions using pattern matching
 source.include_patterns = assets/*
 
-# (str) Application versioning (method 1)
-version = 0.1
+# (str) Application versioning (method 2)
+version.regex = __version__ = ['"](.*)['"]
+version.filename = %(source.dir)s/../../kivymd/__init__.py
 
 android.numeric_version = 1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.0.0rc4,https://github.com/kivymd/KivyMD/archive/master.zip,sdl2_ttf==2.0.15
+requirements = python3,kivy==2.0.0,https://github.com/kivymd/KivyMD/archive/master.zip,sdl2_ttf==2.0.15
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
