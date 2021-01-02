@@ -1201,10 +1201,6 @@ class MDTabs(ThemableBehavior, SpecificBackgroundColorBehavior, AnchorLayout):
                     current_tab_label.x, current_tab_label.width
                 )
 
-            self.tab_bar.update_indicator(
-                current_tab_label.x, current_tab_label.width, radius
-            )
-
     def on_ref_press(self, *args):
         """The method will be called when the ``on_ref_press`` event
         occurs when you, for example, use markup text for tabs."""
