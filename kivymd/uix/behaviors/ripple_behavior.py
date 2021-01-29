@@ -106,6 +106,7 @@ from kivy.graphics import (
 from kivy.graphics.vertex_instructions import RoundedRectangle
 from kivy.properties import (
     BooleanProperty,
+    ColorProperty,
     ListProperty,
     NumericProperty,
     StringProperty,
@@ -126,12 +127,12 @@ class CommonRipple(object):
     and defaults to `1`.
     """
 
-    ripple_color = ListProperty()
+    ripple_color = ColorProperty(None)
     """
     Ripple color in ``rgba`` format.
 
-    :attr:`ripple_color` is an :class:`~kivy.properties.ListProperty`
-    and defaults to `[]`.
+    :attr:`ripple_color` is an :class:`~kivy.properties.ColorProperty`
+    and defaults to `None`.
     """
 
     ripple_alpha = NumericProperty(0.5)

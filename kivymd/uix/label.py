@@ -212,7 +212,7 @@ from kivy.metrics import sp
 from kivy.properties import (
     AliasProperty,
     BooleanProperty,
-    ListProperty,
+    ColorProperty,
     OptionProperty,
     StringProperty,
 )
@@ -297,22 +297,20 @@ class MDLabel(ThemableBehavior, Label, MDAdaptiveWidget):
     and defaults to `None`.
     """
 
-    text_color = ListProperty(None, allownone=True)
+    text_color = ColorProperty(None)
     """Label text color in ``rgba`` format.
 
-    :attr:`text_color` is an :class:`~kivy.properties.ListProperty`
+    :attr:`text_color` is an :class:`~kivy.properties.ColorProperty`
     and defaults to `None`.
     """
 
-    parent_background = ListProperty(None, allownone=True)
+    parent_background = ColorProperty(None)
+    can_capitalize = BooleanProperty(True)
 
     _currently_bound_property = {}
 
-    can_capitalize = BooleanProperty(True)
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
         self.bind(
             font_style=self.update_font_style,
             can_capitalize=self.update_font_style,
@@ -320,7 +318,6 @@ class MDLabel(ThemableBehavior, Label, MDAdaptiveWidget):
         self.on_theme_text_color(None, self.theme_text_color)
         self.update_font_style()
         self.on_opposite_colors(None, self.opposite_colors)
-
         Clock.schedule_once(self.check_font_styles)
 
     def check_font_styles(self, *dt):

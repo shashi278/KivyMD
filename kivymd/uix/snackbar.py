@@ -274,6 +274,7 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import (
     BooleanProperty,
+    ColorProperty,
     ListProperty,
     NumericProperty,
     OptionProperty,
@@ -366,12 +367,12 @@ class BaseSnackbar(MDCard):
     and defaults to `'True'`.
     """
 
-    bg_color = ListProperty()
+    bg_color = ColorProperty(None)
     """
     Snackbar background.
 
-    :attr:`bg_color` is a :class:`~kivy.properties.ListProperty`
-    and defaults to `'[]'`.
+    :attr:`bg_color` is a :class:`~kivy.properties.ColorProperty`
+    and defaults to `None`.
     """
 
     buttons = ListProperty()

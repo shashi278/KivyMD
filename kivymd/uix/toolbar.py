@@ -61,6 +61,10 @@ Add left menu
 .. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/toolbar-2.png
     :align: center
 
+.. note::
+
+    The callback is optional. ``left_action_items: [["menu"]]`` would also work for a button that does nothing.
+
 Add right menu
 --------------
 
@@ -233,6 +237,42 @@ Custom color
 .. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/toolbar-11.png
     :align: center
 
+Tooltips
+--------
+
+You can add MDTooltips to the Toolbar icons by ading a text string to the toolbar item, as shown below
+
+.. code-block:: python
+
+    from kivy.lang import Builder
+
+    from kivymd.app import MDApp
+    from kivymd.uix.snackbar import Snackbar
+
+    KV = '''
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDToolbar:
+            title: "MDToolbar"
+            left_action_items: [["menu", "This is the navigation"]]
+            right_action_items: [["dots-vertical", lambda x: app.callback(x), "this is the More Actions"]]
+
+        MDLabel:
+            text: "Content"
+            halign: "center"
+    '''
+
+
+    class Test(MDApp):
+        def build(self):
+            return Builder.load_string(KV)
+
+        def callback(self, button):
+            Snackbar(text="Hello World").open()
+
+    Test().run()
+
 .. seealso::
 
     `Components-Bottom-App-Bar <https://github.com/kivymd/KivyMD/wiki/Components-Bottom-App-Bar>`_
@@ -244,6 +284,7 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import (
+    BooleanProperty,
     ColorProperty,
     ListProperty,
     NumericProperty,
@@ -253,12 +294,14 @@ from kivy.properties import (
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 
+from kivymd.color_definitions import text_colors
 from kivymd.theming import ThemableBehavior
 from kivymd.uix.behaviors import (
     RectangularElevationBehavior,
     SpecificBackgroundColorBehavior,
 )
 from kivymd.uix.button import MDFloatingActionButton, MDIconButton
+from kivymd.uix.tooltip import MDTooltip
 
 Builder.load_string(
     """
@@ -282,7 +325,7 @@ Builder.load_string(
     size_hint_y: None
     height: root.theme_cls.standard_increment
     padding: [root.theme_cls.horizontal_margins - dp(12), 0]
-    opposite_colors: True
+    # opposite_colors: False
     elevation: root.elevation
 
     canvas:
@@ -346,7 +389,7 @@ Builder.load_string(
             id: label_title
             font_style: "H6"
             opposite_colors: root.opposite_colors
-            theme_text_color: "Custom"
+            theme_text_color: "Custom" if not root.opposite_colors else "Primary"
             text_color: root.specific_text_color
             text: root.title
             shorten: True
@@ -366,6 +409,10 @@ Builder.load_string(
 class MDActionBottomAppBarButton(MDFloatingActionButton):
     _scale_x = NumericProperty(1)
     _scale_y = NumericProperty(1)
+
+
+class MDActionTopAppBarButton(MDIconButton, MDTooltip):
+    pass
 
 
 class MDToolbar(
@@ -395,10 +442,13 @@ class MDToolbar(
 
     .. code-block:: kv
 
-        left_action_items: [`'icon_name'`, callback]
+        left_action_items: [`'icon_name'`, callback, tooltip text]
 
-    where `'icon_name'` is a string that corresponds to an icon definition and
-    ``callback`` is the function called on a touch release event.
+    where `'icon_name'` is a string that corresponds to an icon definition,
+    ``callback`` is the function called on a touch release event and
+    ``tooltip text` is the text to be displayed in the tooltip. Both the
+    ``callback`` and ``tooltip text`` are optional but the order must be
+    preserved.
 
     :attr:`left_action_items` is an :class:`~kivy.properties.ListProperty`
     and defaults to `[]`.
@@ -419,14 +469,6 @@ class MDToolbar(
 
     :attr:`title` is an :class:`~kivy.properties.StringProperty`
     and defaults to `''`.
-    """
-
-    md_bg_color = ColorProperty([0, 0, 0, 0])
-    """
-    Color toolbar.
-
-    :attr:`md_bg_color` is an :class:`~kivy.properties.ColorProperty`
-    and defaults to `[0, 0, 0, 0]`.
     """
 
     anchor_title = OptionProperty("left", options=["left", "center", "right"])
@@ -492,6 +534,8 @@ class MDToolbar(
     and defaults to `'top'`.
     """
 
+    opposite_colors = BooleanProperty(False)
+
     _shift = NumericProperty("3.5dp")
     _angle_start = NumericProperty(90)
     _angle_end = NumericProperty(270)
@@ -513,12 +557,15 @@ class MDToolbar(
             self.icon_color = self.theme_cls.primary_color
         Window.bind(on_resize=self._on_resize)
         self.bind(specific_text_color=self.update_action_bar_text_colors)
+        # self.bind(opposite_colors=self.update_opposite_colors)
+        self.theme_cls.bind(primary_palette=self.update_md_bg_color)
         Clock.schedule_once(
             lambda x: self.on_left_action_items(0, self.left_action_items)
         )
         Clock.schedule_once(
             lambda x: self.on_right_action_items(0, self.right_action_items)
         )
+        Clock.schedule_once(lambda x: self.set_md_bg_color(0, self.md_bg_color))
 
     def on_action_button(self, *args):
         pass
@@ -533,33 +580,50 @@ class MDToolbar(
     def on_right_action_items(self, instance, value):
         self.update_action_bar(self.ids["right_actions"], value)
 
+    def set_md_bg_color(self, instance, value):
+        if value == [1.0, 1.0, 1.0, 0.0]:
+            self.md_bg_color = self.theme_cls.primary_color
+
     def update_action_bar(self, action_bar, action_bar_items):
         action_bar.clear_widgets()
         new_width = 0
         for item in action_bar_items:
             new_width += dp(48)
+            if len(item) == 1:
+                item.append(lambda x: None)
+            if len(item) > 1 and not item[1]:
+                item[1] = lambda x: None
+            if len(item) == 2:
+                if type(item[1]) is str:
+                    item.insert(1, lambda x: None)
+                else:
+                    item.append("")
             action_bar.add_widget(
-                MDIconButton(
+                MDActionTopAppBarButton(
                     icon=item[0],
                     on_release=item[1],
-                    opposite_colors=True,
+                    tooltip_text=item[2],
+                    theme_text_color="Custom"
+                    if not self.opposite_colors
+                    else "Primary",
                     text_color=self.specific_text_color,
-                    theme_text_color="Custom",
+                    opposite_colors=self.opposite_colors,
                 )
             )
         action_bar.width = new_width
 
-    def update_action_bar_text_colors(self, instance, value):
+    def update_md_bg_color(self, *args):
+        self.md_bg_color = self.theme_cls._get_primary_color()
+
+    def update_opposite_colors(self, instance, value):
+        if value:
+            self.ids.label_title.theme_text_color = ""
+
+    def update_action_bar_text_colors(self, *args):
         for child in self.ids["left_actions"].children:
             child.text_color = self.specific_text_color
         for child in self.ids["right_actions"].children:
             child.text_color = self.specific_text_color
-
-    def _on_resize(self, instance, width, height):
-        if self.mode == "center":
-            self.action_button.x = width / 2 - self.action_button.width / 2
-        else:
-            self.action_button.x = width - self.action_button.width * 2
 
     def on_icon(self, instance, value):
         self.action_button.icon = value
@@ -627,6 +691,22 @@ class MDToolbar(
     def set_shadow(self, *args):
         self.action_button._hard_shadow_size = (dp(112), dp(112))
         self.action_button._soft_shadow_size = (dp(112), dp(112))
+
+    def _on_resize(self, instance, width, height):
+        if self.mode == "center":
+            self.action_button.x = width / 2 - self.action_button.width / 2
+        else:
+            self.action_button.x = width - self.action_button.width * 2
+
+    def _update_specific_text_color(self, instance, value):
+        if self.specific_text_color in (
+            [0.0, 0.0, 0.0, 0.87],
+            [0.0, 0.0, 0.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0],
+        ):
+            self.specific_text_color = text_colors[
+                self.theme_cls.primary_palette
+            ][self.theme_cls.primary_hue]
 
 
 class MDBottomAppBar(FloatLayout):

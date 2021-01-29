@@ -10,6 +10,7 @@ __all__ = ("BackgroundColorBehavior", "SpecificBackgroundColorBehavior")
 from kivy.lang import Builder
 from kivy.properties import (
     BoundedNumericProperty,
+    ColorProperty,
     ListProperty,
     OptionProperty,
     ReferenceListProperty,
@@ -124,13 +125,13 @@ class SpecificBackgroundColorBehavior(BackgroundColorBehavior):
     and defaults to `'500'`.
     """
 
-    specific_text_color = ListProperty([0, 0, 0, 0.87])
-    """:attr:`specific_text_color` is an :class:`~kivy.properties.ListProperty`
+    specific_text_color = ColorProperty([0, 0, 0, 0.87])
+    """:attr:`specific_text_color` is an :class:`~kivy.properties.ColorProperty`
     and defaults to `[0, 0, 0, 0.87]`.
     """
 
-    specific_secondary_text_color = ListProperty([0, 0, 0, 0.87])
-    """:attr:`specific_secondary_text_color`is an :class:`~kivy.properties.ListProperty`
+    specific_secondary_text_color = ColorProperty([0, 0, 0, 0.87])
+    """:attr:`specific_secondary_text_color`is an :class:`~kivy.properties.ColorProperty`
     and defaults to `[0, 0, 0, 0.87]`.
     """
 

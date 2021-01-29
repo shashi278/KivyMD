@@ -27,6 +27,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import (
     BooleanProperty,
+    ColorProperty,
     DictProperty,
     ListProperty,
     NumericProperty,
@@ -232,6 +233,7 @@ Builder.load_string(
         ripple_scale: .5 if DEVICE_TYPE == "mobile" else 1
         pos_hint: {'center_y': .5}
         disabled: True
+        md_bg_color_disabled: 0, 0, 0, 0
         on_release: root.table_data.set_next_row_data_parts("back")
 
     MDIconButton:
@@ -241,6 +243,7 @@ Builder.load_string(
         ripple_scale: .5 if DEVICE_TYPE == "mobile" else 1
         pos_hint: {'center_y': .5}
         disabled: True
+        md_bg_color_disabled: 0, 0, 0, 0
         on_release: root.table_data.set_next_row_data_parts("forward")
 
 
@@ -337,7 +340,7 @@ class CellRow(
     index = None
     icon = StringProperty()
     icon_copy = icon
-    icon_color = ListProperty()
+    icon_color = ColorProperty(None)
     selected = BooleanProperty(False)
     selectable = BooleanProperty(True)
 
@@ -794,12 +797,11 @@ class TableData(RecycleView):
             if self.cell_row_obj_dict.get(i, None):
                 cell_row_obj = self.cell_row_obj_dict[i]
             else:
-                cell_row_obj = (
-                    cell_row_obj
-                ) = self.view_adapter.get_visible_view(i)
-                self.cell_row_obj_dict[i] = cell_row_obj
-
-            tmp.append(cell_row_obj.ids.check.state == state)
+                cell_row_obj = self.view_adapter.get_visible_view(i)
+                if cell_row_obj:
+                    self.cell_row_obj_dict[i] = cell_row_obj
+            if cell_row_obj:
+                tmp.append(cell_row_obj.ids.check.state == state)
 
         return all(tmp)
 
@@ -813,12 +815,11 @@ class TableData(RecycleView):
             if self.cell_row_obj_dict.get(i, None):
                 cell_row_obj = self.cell_row_obj_dict[i]
             else:
-                cell_row_obj = (
-                    cell_row_obj
-                ) = self.view_adapter.get_visible_view(i)
-                self.cell_row_obj_dict[i] = cell_row_obj
+                cell_row_obj = self.view_adapter.get_visible_view(i)
+                if cell_row_obj:
+                    self.cell_row_obj_dict[i] = cell_row_obj
 
-            if cell_row_obj.ids.check.state == "down":
+            if cell_row_obj and cell_row_obj.ids.check.state == "down":
                 idx = cell_row_obj.index
                 row = []
                 for data in self.recycle_data:
@@ -1293,7 +1294,7 @@ class MDDataTable(ThemableBehavior, AnchorLayout):
     and defaults to `'140dp'`.
     """
 
-    background_color = ListProperty([0, 0, 0, 0])
+    background_color = ColorProperty([0, 0, 0, 0])
     """
     Background color in the format (r, g, b, a).
     See :attr:`~kivy.uix.modalview.ModalView.background_color`.
@@ -1345,8 +1346,8 @@ class MDDataTable(ThemableBehavior, AnchorLayout):
     .. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/datatables-use-markup-strings.png
         :align: center
 
-    :attr:`background_color` is a :class:`~kivy.properties.ListProperty` and
-    defaults to [0, 0, 0, .7].
+    :attr:`background_color` is a :class:`~kivy.properties.ColorProperty` and
+    defaults to [0, 0, 0, 0].
     """
 
     def __init__(self, **kwargs):

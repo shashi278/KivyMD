@@ -69,6 +69,7 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import (
+    ColorProperty,
     ListProperty,
     NumericProperty,
     ObjectProperty,
@@ -117,7 +118,9 @@ Builder.load_string(
 
         canvas:
             Color:
-                rgba: root.md_bg_color
+                rgba:
+                    root.theme_cls.bg_dark \
+                    if not root.md_bg_color else root.md_bg_color
             RoundedRectangle:
                 pos: self.pos
                 size: self.size
@@ -514,12 +517,12 @@ class MDDialog(BaseDialog):
     and defaults to `'None'`.
     """
 
-    md_bg_color = ListProperty()
+    md_bg_color = ColorProperty(None)
     """
     Background color in the format (r, g, b, a).
 
-    :attr:`md_bg_color` is an :class:`~kivy.properties.ListProperty`
-    and defaults to `[]`.
+    :attr:`md_bg_color` is an :class:`~kivy.properties.ColorProperty`
+    and defaults to `None`.
     """
 
     _scroll_height = NumericProperty("28dp")

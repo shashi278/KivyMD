@@ -2,6 +2,10 @@
 Components/Spinner
 ==================
 
+.. seealso::
+
+    `Material Design spec, Menus <https://material.io/components/progress-indicators#circular-progress-indicators>`_
+
 .. rubric:: Circular progress indicator in Google's Material Design.
 
 Usage
@@ -71,13 +75,49 @@ Spinner palette
 
 .. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/spinner-palette.gif
     :align: center
+
+Determinate mode
+----------------
+
+.. code-block:: python
+
+    from kivy.lang import Builder
+
+    from kivymd.app import MDApp
+
+    KV = '''
+    MDScreen:
+
+        MDSpinner:
+            size_hint: None, None
+            size: dp(48), dp(48)
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            determinate: True
+    '''
+
+
+    class Test(MDApp):
+        def build(self):
+            return Builder.load_string(KV)
+
+
+    Test().run()
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/spinner-determinate.gif
+    :align: center
 """
 
 __all__ = ("MDSpinner",)
 
 from kivy.animation import Animation
+from kivy.clock import Clock
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty
+from kivy.properties import (
+    BooleanProperty,
+    ColorProperty,
+    ListProperty,
+    NumericProperty,
+)
 from kivy.uix.widget import Widget
 
 from kivymd.theming import ThemableBehavior
@@ -95,7 +135,7 @@ Builder.load_string(
             rgba: self.color
             a: self._alpha
         SmoothLine:
-            circle: self.center_x, self.center_y, self.width / 2,\
+            circle: self.center_x, self.center_y, self.width / 2, \
             self._angle_start, self._angle_end
             cap: 'square'
             width: dp(2.25)
@@ -107,7 +147,8 @@ Builder.load_string(
 
 
 class MDSpinner(ThemableBehavior, Widget):
-    """:class:`MDSpinner` is an implementation of the circular progress
+    """
+    :class:`MDSpinner` is an implementation of the circular progress
     indicator in `Google's Material Design`.
 
     It can be used either as an indeterminate indicator that loops while
@@ -134,18 +175,19 @@ class MDSpinner(ThemableBehavior, Widget):
     """
 
     active = BooleanProperty(True)
-    """Use :attr:`active` to start or stop the spinner.
+    """
+    Use :attr:`active` to start or stop the spinner.
 
     :attr:`active` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to `True`.
     """
 
-    color = ListProperty([0, 0, 0, 0])
+    color = ColorProperty([0, 0, 0, 0])
     """
     Spinner color.
 
-    :attr:`color` is a :class:`~kivy.properties.ListProperty`
-    and defaults to ``self.theme_cls.primary_color``.
+    :attr:`color` is a :class:`~kivy.properties.ColorProperty`
+    and defaults to `[0, 0, 0, 0]`.
     """
 
     palette = ListProperty()
@@ -169,7 +211,9 @@ class MDSpinner(ThemableBehavior, Widget):
         self._alpha_anim_out = Animation(_alpha=0, duration=0.3, t="out_quad")
         self._alpha_anim_out.bind(on_complete=self._reset)
         self.theme_cls.bind(primary_color=self._update_color)
+        Clock.schedule_once(self.check_determinate)
 
+    def check_determinate(self, interval):
         if self.determinate:
             self._start_determinate()
         else:
@@ -180,13 +224,11 @@ class MDSpinner(ThemableBehavior, Widget):
 
     def _start_determinate(self, *args):
         self._alpha_anim_in.start(self)
-
-        _rot_anim = Animation(
+        Animation(
             _rotation_angle=0,
             duration=self.determinate_time * 0.7,
             t="out_quad",
-        )
-        _rot_anim.start(self)
+        ).start(self)
 
         _angle_start_anim = Animation(
             _angle_end=360, duration=self.determinate_time, t="in_out_quad"
@@ -246,6 +288,9 @@ class MDSpinner(ThemableBehavior, Widget):
         self._rotation_angle = 360
         self._alpha = 0
         self.active = False
+
+        if self.determinate:
+            self._start_determinate()
 
     def on_palette(self, instance, value):
         self._palette = iter(value)

@@ -19,6 +19,132 @@ Control material properties
 
 The main application class inherited from the `MDApp` class has the :attr:`theme_cls`
 attribute, with which you control the material properties of your application.
+
+Changing the theme colors
+-------------------------
+
+The standard theme_cls is designed to provide the standard themes and colors as
+defined by Material Design.
+
+We do not recommend that you change this.
+
+However, if you do need to change the standard colors, for instance to meet branding
+guidelines, you can do this by overloading the `color_definitions.py` object.
+
+* Create a custom color defintion object. This should have the same format as the `colors <https://kivymd.readthedocs.io/en/latest/themes/color-definitions/#module-kivymd.color_definitions>`_ object in `color_definitions.py` and contain definitions for at least the primary color, the accent color and the Light and Dark backgrounds.
+
+.. note::
+
+    Your custom colors *must* use the names of the `existing colors as
+    defined in the palette <https://kivymd.readthedocs.io/en/latest/themes/color-definitions/#kivymd.color_definitions.palette>`_
+    e.g. You can have `Blue` but you cannot have `NavyBlue`.
+
+
+* Add the custom theme to the MDApp as shown in the following snippet.
+
+.. code-block:: python
+
+    from kivy.lang import Builder
+    from kivy.uix.floatlayout import FloatLayout
+    from kivy.properties import ObjectProperty
+
+    from kivymd.app import MDApp
+    from kivymd.uix.tab import MDTabsBase
+    from kivymd.icon_definitions import md_icons
+
+    colors = {
+        "Teal": {
+            "50": "e4f8f9",
+            "100": "bdedf0",
+            "200": "97e2e8",
+            "300": "79d5de",
+            "400": "6dcbd6",
+            "500": "6ac2cf",
+            "600": "63b2bc",
+            "700": "5b9ca3",
+            "800": "54888c",
+            "900": "486363",
+            "A100": "bdedf0",
+            "A200": "97e2e8",
+            "A400": "6dcbd6",
+            "A700": "5b9ca3",
+        },
+        "Blue": {
+            "50": "e3f3f8",
+            "100": "b9e1ee",
+            "200": "91cee3",
+            "300": "72bad6",
+            "400": "62acce",
+            "500": "589fc6",
+            "600": "5191b8",
+            "700": "487fa5",
+            "800": "426f91",
+            "900": "35506d",
+            "A100": "b9e1ee",
+            "A200": "91cee3",
+            "A400": "62acce",
+            "A700": "487fa5",
+        },
+        "Light": {
+            "StatusBar": "E0E0E0",
+            "AppBar": "F5F5F5",
+            "Background": "FAFAFA",
+            "CardsDialogs": "FFFFFF",
+            "FlatButtonDown": "cccccc",
+        },
+        "Dark": {
+            "StatusBar": "000000",
+            "AppBar": "212121",
+            "Background": "303030",
+            "CardsDialogs": "424242",
+            "FlatButtonDown": "999999",
+        }
+    }
+
+
+    KV = '''
+
+    BoxLayout:
+        orientation: "vertical"
+        MDToolbar:
+            title: "Example Tabs"
+        MDTabs:
+            id: tabs
+
+
+    <Tab>:
+
+        MDIconButton:
+            id: icon
+            icon: root.icon
+            user_font_size: "48sp"
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+    class Tab(FloatLayout, MDTabsBase):
+        '''Class implementing content for a tab.'''
+        icon = ObjectProperty()
+
+
+    class Example(MDApp):
+        icons = list(md_icons.keys())[15:30]
+
+        def build(self):
+            self.theme_cls.colors = colors
+            self.theme_cls.primary_palette = "Blue"
+            self.theme_cls.accent_palette = "Teal"
+            return Builder.load_string(KV)
+
+        def on_start(self):
+            for name_tab in self.icons:
+                tab = Tab(text="This is " + name_tab, icon=name_tab)
+                self.root.ids.tabs.add_widget(tab)
+
+    Example().run()
+
+This will change the theme colors to your custom defintion. In all other respects,
+the theming stays as documented.
+
+
 """
 
 from kivy.app import App
@@ -30,8 +156,8 @@ from kivy.metrics import dp
 from kivy.properties import (
     AliasProperty,
     BooleanProperty,
+    ColorProperty,
     DictProperty,
-    ListProperty,
     ObjectProperty,
     OptionProperty,
     StringProperty,
@@ -40,7 +166,6 @@ from kivy.utils import get_color_from_hex
 
 from kivymd import images_path
 from kivymd.color_definitions import colors, hue, palette
-from kivymd.font_definitions import theme_font_styles  # NOQA: F401
 from kivymd.material_resources import DEVICE_IOS, DEVICE_TYPE
 
 
@@ -152,7 +277,7 @@ class ThemeManager(EventDispatcher):
 
     def _get_primary_color(self):
         return get_color_from_hex(
-            colors[self.primary_palette][self.primary_hue]
+            self.colors[self.primary_palette][self.primary_hue]
         )
 
     primary_color = AliasProperty(
@@ -167,7 +292,7 @@ class ThemeManager(EventDispatcher):
 
     def _get_primary_light(self):
         return get_color_from_hex(
-            colors[self.primary_palette][self.primary_light_hue]
+            self.colors[self.primary_palette][self.primary_light_hue]
         )
 
     primary_light = AliasProperty(
@@ -221,7 +346,7 @@ class ThemeManager(EventDispatcher):
 
     def _get_primary_dark(self):
         return get_color_from_hex(
-            colors[self.primary_palette][self.primary_dark_hue]
+            self.colors[self.primary_palette][self.primary_dark_hue]
         )
 
     primary_dark = AliasProperty(
@@ -275,7 +400,9 @@ class ThemeManager(EventDispatcher):
     """
 
     def _get_accent_color(self):
-        return get_color_from_hex(colors[self.accent_palette][self.accent_hue])
+        return get_color_from_hex(
+            self.colors[self.accent_palette][self.accent_hue]
+        )
 
     accent_color = AliasProperty(
         _get_accent_color, bind=["accent_palette", "accent_hue"]
@@ -290,7 +417,7 @@ class ThemeManager(EventDispatcher):
 
     def _get_accent_light(self):
         return get_color_from_hex(
-            colors[self.accent_palette][self.accent_light_hue]
+            self.colors[self.accent_palette][self.accent_light_hue]
         )
 
     accent_light = AliasProperty(
@@ -306,7 +433,7 @@ class ThemeManager(EventDispatcher):
 
     def _get_accent_dark(self):
         return get_color_from_hex(
-            colors[self.accent_palette][self.accent_dark_hue]
+            self.colors[self.accent_palette][self.accent_dark_hue]
         )
 
     accent_dark = AliasProperty(
@@ -362,9 +489,9 @@ class ThemeManager(EventDispatcher):
     def _get_bg_darkest(self, opposite=False):
         theme_style = self._get_theme_style(opposite)
         if theme_style == "Light":
-            return get_color_from_hex(colors["Light"]["StatusBar"])
+            return get_color_from_hex(self.colors["Light"]["StatusBar"])
         elif theme_style == "Dark":
-            return get_color_from_hex(colors["Dark"]["StatusBar"])
+            return get_color_from_hex(self.colors["Dark"]["StatusBar"])
 
     bg_darkest = AliasProperty(_get_bg_darkest, bind=["theme_style"])
     """
@@ -433,9 +560,9 @@ class ThemeManager(EventDispatcher):
     def _get_bg_dark(self, opposite=False):
         theme_style = self._get_theme_style(opposite)
         if theme_style == "Light":
-            return get_color_from_hex(colors["Light"]["AppBar"])
+            return get_color_from_hex(self.colors["Light"]["AppBar"])
         elif theme_style == "Dark":
-            return get_color_from_hex(colors["Dark"]["AppBar"])
+            return get_color_from_hex(self.colors["Dark"]["AppBar"])
 
     bg_dark = AliasProperty(_get_bg_dark, bind=["theme_style"])
     """
@@ -462,9 +589,9 @@ class ThemeManager(EventDispatcher):
     def _get_bg_normal(self, opposite=False):
         theme_style = self._get_theme_style(opposite)
         if theme_style == "Light":
-            return get_color_from_hex(colors["Light"]["Background"])
+            return get_color_from_hex(self.colors["Light"]["Background"])
         elif theme_style == "Dark":
-            return get_color_from_hex(colors["Dark"]["Background"])
+            return get_color_from_hex(self.colors["Dark"]["Background"])
 
     bg_normal = AliasProperty(_get_bg_normal, bind=["theme_style"])
     """
@@ -491,9 +618,9 @@ class ThemeManager(EventDispatcher):
     def _get_bg_light(self, opposite=False):
         theme_style = self._get_theme_style(opposite)
         if theme_style == "Light":
-            return get_color_from_hex(colors["Light"]["CardsDialogs"])
+            return get_color_from_hex(self.colors["Light"]["CardsDialogs"])
         elif theme_style == "Dark":
-            return get_color_from_hex(colors["Dark"]["CardsDialogs"])
+            return get_color_from_hex(self.colors["Dark"]["CardsDialogs"])
 
     bg_light = AliasProperty(_get_bg_light, bind=["theme_style"])
     """"
@@ -690,7 +817,7 @@ class ThemeManager(EventDispatcher):
 
     # Hardcoded because muh standard
     def _get_error_color(self):
-        return get_color_from_hex(colors["Red"]["A700"])
+        return get_color_from_hex(self.colors["Red"]["A700"])
 
     error_color = AliasProperty(_get_error_color)
     """
@@ -708,7 +835,7 @@ class ThemeManager(EventDispatcher):
     def _set_ripple_color(self, value):
         self._ripple_color = value
 
-    _ripple_color = ListProperty(get_color_from_hex(colors["Gray"]["400"]))
+    _ripple_color = ColorProperty(get_color_from_hex(colors["Gray"]["400"]))
     """Private value."""
 
     ripple_color = AliasProperty(
@@ -783,7 +910,7 @@ class ThemeManager(EventDispatcher):
         if not self.set_clearcolor:
             return
         Window.clearcolor = get_color_from_hex(
-            colors[theme_style]["Background"]
+            self.colors[theme_style]["Background"]
         )
 
     # font name, size (sp), always caps, letter spacing (sp)
@@ -852,6 +979,70 @@ class ThemeManager(EventDispatcher):
     :attr:`font_styles` is an :class:`~kivy.properties.DictProperty`.
     """
 
+    def set_colors(
+        self,
+        primary_palette,
+        primary_hue,
+        primary_light_hue,
+        primary_dark_hue,
+        accent_palette,
+        accent_hue,
+        accent_light_hue,
+        accent_dark_hue,
+    ):
+        """
+        Courtesy method to allow all of the theme color attributes to be set in one call.
+
+        :attr:`set_colors` allows all of the following to be set in one method call:
+
+        * primary palette color,
+        * primary hue,
+        * primary light hue,
+        * primary dark hue,
+        * accent palette color,
+        * accent hue,
+        * accent ligth hue, and
+        * accent dark hue.
+
+        Note that all values *must* be provided. If you only want to set one or two values
+        use the appropriate method call for that.
+
+        .. code-block:: python
+
+            from kivy.uix.screenmanager import Screen
+
+            from kivymd.app import MDApp
+            from kivymd.uix.button import MDRectangleFlatButton
+
+
+            class MainApp(MDApp):
+                def build(self):
+                    self.theme_cls.set_colors(
+                        "Blue", "600", "50", "800", "Teal", "600", "100", "800"
+                    )
+
+                    screen = Screen()
+                    screen.add_widget(
+                        MDRectangleFlatButton(
+                            text="Hello, World",
+                            pos_hint={"center_x": 0.5, "center_y": 0.5},
+                        )
+                    )
+                    return screen
+
+
+            MainApp().run()
+
+        """
+        self.primary_palette = primary_palette
+        self.primary_hue = primary_hue
+        self.primary_light_hue = primary_light_hue
+        self.primary_dark_hue = primary_dark_hue
+        self.accent_palette = accent_palette
+        self.accent_hue = accent_hue
+        self.accent_light_hue = accent_light_hue
+        self.accent_dark_hue = accent_dark_hue
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.rec_shadow = Atlas(f"{images_path}rec_shadow.atlas")
@@ -861,6 +1052,7 @@ class ThemeManager(EventDispatcher):
         Clock.schedule_once(lambda x: self.on_theme_style(0, self.theme_style))
         self._determine_device_orientation(None, Window.size)
         Window.bind(size=self._determine_device_orientation)
+        self.colors = colors
 
 
 class ThemableBehavior(EventDispatcher):

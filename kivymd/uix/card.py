@@ -545,7 +545,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import (
     BooleanProperty,
-    ListProperty,
+    ColorProperty,
     NumericProperty,
     OptionProperty,
     StringProperty,
@@ -598,11 +598,11 @@ Builder.load_string(
 class MDSeparator(ThemableBehavior, BoxLayout):
     """A separator line."""
 
-    color = ListProperty()
+    color = ColorProperty(None)
     """Separator color in ``rgba`` format.
 
-    :attr:`color` is a :class:`~kivy.properties.ListProperty`
-    and defaults to `[]`.
+    :attr:`color` is a :class:`~kivy.properties.ColorProperty`
+    and defaults to `None`.
     """
 
     def __init__(self, **kwargs):
@@ -670,7 +670,7 @@ class MDCard(
         self.theme_cls.bind(theme_style=self.update_md_bg_color)
         Clock.schedule_once(lambda x: self._on_elevation(self.elevation))
         Clock.schedule_once(
-            lambda x: self._on_ripple_behavior(self.ripple_behavior)
+            lambda x: self.on_ripple_behavior(0, self.ripple_behavior)
         )
         self.update_md_bg_color(self, self.theme_cls.theme_style)
 
@@ -682,14 +682,14 @@ class MDCard(
         if self.radius != [0, 0, 0, 0]:
             self.background = f"{images_path}/transparent.png"
 
+    def on_ripple_behavior(self, instance, value):
+        self._no_ripple_effect = False if value else True
+
     def _on_elevation(self, value):
         if value is None:
             self.elevation = 6
         else:
             self.elevation = value
-
-    def _on_ripple_behavior(self, value):
-        self._no_ripple_effect = False if value else True
 
 
 class MDCardSwipe(RelativeLayout):

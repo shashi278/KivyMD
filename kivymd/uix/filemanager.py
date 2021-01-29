@@ -123,6 +123,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import (
     BooleanProperty,
+    ColorProperty,
     ListProperty,
     NumericProperty,
     ObjectProperty,
@@ -271,7 +272,7 @@ class IconButton(CircularRippleBehavior, ButtonBehavior, FitImage):
 
 class FloatButton(AnchorLayout):
     callback = ObjectProperty()
-    md_bg_color = ListProperty([1, 1, 1, 1])
+    md_bg_color = ColorProperty([1, 1, 1, 1])
     icon = StringProperty()
 
 
@@ -401,12 +402,12 @@ class MDFileManager(ThemableBehavior, MDFloatLayout):
     and defaults to `any`.
     """
 
-    selection = ListProperty([])
+    selection = ListProperty()
     """
     Contains the list of files that are currently selected.
 
     :attr:`selection` is a read-only :class:`~kivy.properties.ListProperty` and
-    defaults to [].
+    defaults to `[]`.
     """
 
     _window_manager = None
